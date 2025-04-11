@@ -20,7 +20,7 @@
 ## 🛠️ Project Structure
 
 ```
-video_streaming_player/
+Streaming_Mode_App/
 ├── background.js         # Service worker that handles tab locking logic
 ├── popup.html            # Popup UI shown when clicking the extension icon
 ├── icon.png              # Extension icon
