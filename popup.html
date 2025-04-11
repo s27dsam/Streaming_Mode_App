@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Streaming Mode</title>
+  <style>
+    body {
+      width: 300px;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+    }
+    
+    h1 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      text-align: center;
+      color: #0c2aee;
+    }
+    
+    .status {
+      margin: 20px 0;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      font-weight: bold;
+    }
+    
+    .status.active {
+      background-color: #121312;
+      color: #2e7d32;
+    }
+    
+    .status.inactive {
+      background-color: #6a6868;
+      color: #f9f5f5;
+    }
+    
+    .buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    button {
+      padding: 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.2s;
+    }
+    
+    #startFocus {
+      background-color: #4CAF50;
+      color: rgb(15, 14, 14);
+    }
+    
+    #startFocus:hover {
+      background-color: #388E3C;
+    }
+    
+    #stopFocus {
+      background-color: #F44336;
+      color: rgb(9, 8, 8);
+    }
+    
+    #stopFocus:hover {
+      background-color: #D32F2F;
+    }
+    
+    #currentTab {
+      margin-top: 15px;
+      font-size: 12px;
+      color: #0c2aee;
+      font-style: italic;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Streaming Mode (Tab Lock)</h1>
+  
+  <div id="statusMessage" class="status inactive">
+    Streaming Mode is currently OFF
+  </div>
+  
+  <div class="buttons">
+    <button id="startFocus">Start Streaming Mode</button>
+    <button id="stopFocus">Stop Streaming Mode</button>
+  </div>
+  
+  <div id="currentTab"></div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
