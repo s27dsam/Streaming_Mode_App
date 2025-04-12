@@ -8,6 +8,18 @@ document.addEventListener('DOMContentLoaded', () => {
   const resumeCard = document.getElementById('resumeCard');
   const resumeInfo = document.getElementById('resumeInfo');
   const resumeButton = document.getElementById('resumeButton');
+  const shortcutDisplay = document.getElementById('shortcutDisplay');
+  const footerText = document.getElementById('footerText');
+  
+  // Set correct keyboard shortcut based on platform
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  if (isMac) {
+    shortcutDisplay.textContent = '⌘+Shift+L';
+    footerText.textContent = 'Press ⌘+Shift+L to toggle Streaming Mode';
+  } else {
+    shortcutDisplay.textContent = 'Ctrl+Shift+S';
+    footerText.textContent = 'Press Ctrl+Shift+S to toggle Streaming Mode';
+  }
   
   // Check current focus mode status when popup opens
   chrome.runtime.sendMessage({ action: "getStatus" }, (response) => {

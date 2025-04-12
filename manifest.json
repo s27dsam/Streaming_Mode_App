@@ -31,7 +31,7 @@
     "toggle-streaming-mode": {
       "suggested_key": {
         "default": "Ctrl+Shift+S",
-        "mac": "Command+Shift+S"
+        "mac": "Command+Shift+L"
       },
       "description": "Toggle Streaming Mode On/Off"
     }
