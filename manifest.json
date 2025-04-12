@@ -7,10 +7,12 @@
     "tabs",
     "activeTab",
     "scripting",
-    "storage"
+    "storage",
+    "notifications"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "action": {
     "default_popup": "popup.html",
@@ -24,5 +26,14 @@
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
+  },
+  "commands": {
+    "toggle-streaming-mode": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Toggle Streaming Mode On/Off"
+    }
   }
 }

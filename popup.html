@@ -4,94 +4,214 @@
   <meta charset="utf-8">
   <title>Streaming Mode</title>
   <style>
+    :root {
+      --bg-color: #111111;
+      --text-color: #f1f1f1;
+      --accent-color: #FF5722;
+      --disabled-color: #444444;
+      --card-bg: #1d1d1d;
+      --border-radius: 8px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+    }
+    
     body {
-      width: 300px;
+      width: 320px;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
+    }
+    
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #2a2a2a;
     }
     
     h1 {
-      font-size: 18px;
-      margin-bottom: 16px;
-      text-align: center;
-      color: #0c2aee;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-color);
     }
     
-    .status {
-      margin: 20px 0;
-      padding: 10px;
-      border-radius: 5px;
-      text-align: center;
-      font-weight: bold;
+    .keyboard-shortcut {
+      background-color: #232323;
+      color: #aaa;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-weight: 500;
     }
     
-    .status.active {
-      background-color: #121312;
-      color: #2e7d32;
+    .status-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
     
-    .status.inactive {
-      background-color: #6a6868;
-      color: #f9f5f5;
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
     
-    .buttons {
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background-color: #444;
+    }
+    
+    .status-dot.active {
+      background-color: var(--accent-color);
+      box-shadow: 0 0 8px rgba(255, 87, 34, 0.6);
+    }
+    
+    .status-text {
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .current-tab {
+      font-size: 12px;
+      color: #999;
+      background-color: #232323;
+      padding: 8px 12px;
+      border-radius: 4px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      border-left: 3px solid var(--accent-color);
+    }
+    
+    .resume-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      border-left: 3px solid #2196F3;
+    }
+    
+    .resume-info {
+      font-size: 12px;
+      color: #999;
+    }
+    
+    .action-buttons {
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
     
-    button {
+    .button {
       padding: 12px;
       border: none;
-      border-radius: 5px;
+      border-radius: var(--border-radius);
       cursor: pointer;
-      font-weight: bold;
-      transition: background-color 0.2s;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     
-    #startFocus {
-      background-color: #4CAF50;
-      color: rgb(15, 14, 14);
+    .button.primary {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
     }
     
-    #startFocus:hover {
-      background-color: #388E3C;
+    .button.primary:hover {
+      background-color: #FF7043;
     }
     
-    #stopFocus {
-      background-color: #F44336;
-      color: rgb(9, 8, 8);
+    .button.secondary {
+      background-color: transparent;
+      color: var(--text-color);
+      border: 1px solid #444;
     }
     
-    #stopFocus:hover {
-      background-color: #D32F2F;
+    .button.secondary:hover {
+      background-color: rgba(255, 255, 255, 0.05);
     }
     
-    #currentTab {
-      margin-top: 15px;
-      font-size: 12px;
-      color: #0c2aee;
-      font-style: italic;
+    .button:disabled {
+      background-color: var(--disabled-color);
+      color: #777;
+      cursor: not-allowed;
+    }
+    
+    .button.secondary:disabled {
+      border-color: #333;
+      background-color: transparent;
+      color: #555;
+    }
+    
+    .footer {
+      font-size: 11px;
+      color: #666;
       text-align: center;
+      margin-top: 16px;
+    }
+    
+    .hidden {
       display: none;
     }
   </style>
 </head>
 <body>
-  <h1>Streaming Mode (Tab Lock)</h1>
-  
-  <div id="statusMessage" class="status inactive">
-    Streaming Mode is currently OFF
+  <div class="container">
+    <div class="header">
+      <h1>Streaming Mode</h1>
+      <div class="keyboard-shortcut">Ctrl+Shift+S</div>
+    </div>
+    
+    <div class="status-card">
+      <div class="status-indicator">
+        <div id="statusDot" class="status-dot"></div>
+        <div id="statusText" class="status-text">Streaming Mode is OFF</div>
+      </div>
+      <div id="currentTab" class="current-tab hidden">No active stream</div>
+    </div>
+    
+    <div id="resumeCard" class="resume-card hidden">
+      <div class="status-text">Resume previous session?</div>
+      <div id="resumeInfo" class="resume-info">No previous session available</div>
+      <button id="resumeButton" class="button secondary">Resume Streaming</button>
+    </div>
+    
+    <div class="action-buttons">
+      <button id="startFocus" class="button primary">
+        Start Streaming Mode
+      </button>
+      <button id="stopFocus" class="button secondary">
+        Stop Streaming Mode
+      </button>
+    </div>
+    
+    <div class="footer">
+      Press Ctrl+Shift+S (or ⌘+Shift+S on Mac) to toggle Streaming Mode
+    </div>
   </div>
-  
-  <div class="buttons">
-    <button id="startFocus">Start Streaming Mode</button>
-    <button id="stopFocus">Stop Streaming Mode</button>
-  </div>
-  
-  <div id="currentTab"></div>
   
   <script src="popup.js"></script>
 </body>
