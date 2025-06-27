@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Streaming Mode (Tab Lock)",
-  "version": "1.0",
+  "version": "2.0",
   "description": "Lock yourself to a single tab to stop having to close popup adds on streaming sites.",
   "permissions": [
     "tabs",
@@ -9,6 +9,13 @@
     "scripting",
     "storage",
     "notifications"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
   ],
   "background": {
     "service_worker": "background.js",
