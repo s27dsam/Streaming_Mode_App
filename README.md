@@ -40,4 +40,3 @@ Streaming_Mode_App/
 - **Service Worker**: `background.js`
 - **Popup Interface**: `popup.html`
 - **Icons**: Included in three sizes (16px, 48px, 128px)
-

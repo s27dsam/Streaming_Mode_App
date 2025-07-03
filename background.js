@@ -74,15 +74,47 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 // Listen for tab creation events - this is crucial to prevent new tabs
 chrome.tabs.onCreated.addListener((tab) => {
   if (focusMode && tab.id !== focusTabId) {
-    console.log("New tab created - closing it immediately");
-    // Small timeout to ensure the tab is fully created before removing
-    setTimeout(() => {
-      chrome.tabs.remove(tab.id, () => {
-        if (chrome.runtime.lastError) {
-          console.error(`Error removing newly created tab ${tab.id}:`, chrome.runtime.lastError.message);
-        }
-      });
-    }, 50);
+    console.log("New tab created - closing it and preserving focus.");
+
+    // Immediately remove the unwanted tab. The previous timeout could allow
+    // the browser to switch focus and exit fullscreen mode.
+    chrome.tabs.remove(tab.id, () => {
+      if (chrome.runtime.lastError && !chrome.runtime.lastError.message.includes("No tab with id")) {
+        console.error(`Error removing newly created tab ${tab.id}:`, chrome.runtime.lastError.message);
+      }
+    });
+
+    // After removing the new tab, we must ensure the original window is re-focused.
+    // This is the key to preventing the browser from exiting fullscreen mode.
+    chrome.windows.update(focusWindowId, { focused: true }, () => {
+      if (chrome.runtime.lastError) {
+        // This can happen if the focus window was closed, which is handled by other listeners. We can ignore it.
+      }
+    });
+  }
+});
+
+// Listen for tab updates to prevent redirects on the focused tab
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  // Check if focus mode is on, it's the correct tab, and the URL is trying to change
+  if (focusMode && tabId === focusTabId && changeInfo.url && lastFocusTabInfo) {
+    try {
+      const originalOrigin = new URL(lastFocusTabInfo.url).origin;
+      const newOrigin = new URL(changeInfo.url).origin;
+
+      // If the origin of the new URL is different, it's a redirect to another site.
+      // We block this to prevent unwanted navigation.
+      if (newOrigin !== originalOrigin) {
+        console.log(`Cross-origin redirect blocked. Reverting from ${changeInfo.url} to ${lastFocusTabInfo.url}`);
+        chrome.tabs.update(tabId, { url: lastFocusTabInfo.url }, () => {
+          if (chrome.runtime.lastError) {
+            console.error(`Error reverting tab URL for tab ${tabId}:`, chrome.runtime.lastError.message);
+          }
+        });
+      }
+    } catch (e) {
+      console.error("Error parsing URL for redirect check:", e);
+    }
   }
 });
 
@@ -161,12 +193,16 @@ function enableFocusMode(tabId, windowId) {
     }
   });
 
-  // Send message to content script to apply visual cue
-  chrome.tabs.sendMessage(tabId, { action: 'applyStreamingModeBorder' }, () => {
-    if (chrome.runtime.lastError) {
-      console.warn(`Could not send message to content script in tab ${tabId}. It might not be loaded yet or the tab is not accessible:`, chrome.runtime.lastError.message);
+  // Use executeScript for a more reliable way to apply the border.
+  // This directly invokes the function in content.js.
+  chrome.scripting.executeScript({
+    target: { tabId: tabId },
+    func: () => {
+      if (typeof applyBorder === 'function') {
+        applyBorder();
+      }
     }
-  });
+  }).catch(err => console.warn(`Could not execute script on tab ${tabId} to apply border:`, err.message));
 }
 
 // Function to disable focus mode
@@ -192,13 +228,16 @@ function disableFocusMode() {
   // Update extension icon to show inactive state
   chrome.action.setBadgeText({ text: "" });
 
-  // Send message to content script to remove visual cue
+  // Use executeScript to reliably remove the visual cue.
   if (tabIdToRemoveBorder) {
-    chrome.tabs.sendMessage(tabIdToRemoveBorder, { action: 'removeStreamingModeBorder' }, () => {
-      if (chrome.runtime.lastError) {
-        console.warn(`Could not send message to content script in tab ${tabIdToRemoveBorder} to remove border:`, chrome.runtime.lastError.message);
+    chrome.scripting.executeScript({
+      target: { tabId: tabIdToRemoveBorder },
+      func: () => {
+        if (typeof removeBorder === 'function') {
+          removeBorder();
+        }
       }
-    });
+    }).catch(err => console.warn(`Could not execute script on tab ${tabIdToRemoveBorder} to remove border:`, err.message));
   }
 }
 
@@ -294,6 +333,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       }
     });
     return true;
+  }
+  // This is a new message from content scripts to check their status on load.
+  else if (message.action === "queryTabStatus") {
+    if (focusMode && sender.tab && sender.tab.id === focusTabId) {
+      sendResponse({ isFocusTab: true });
+    } else {
+      sendResponse({ isFocusTab: false });
+    }
+    // Synchronous response, no need to return true.
+    return;
   }
   return false;
 });

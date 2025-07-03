@@ -26,7 +26,7 @@ function removeBorder() {
   }
 }
 
-// Listen for messages from the background script
+// Listen for direct commands from the background script
 chrome.runtime.onMessage.addListener((message) => {
   if (message.action === 'applyStreamingModeBorder') {
     applyBorder();
@@ -35,6 +35,14 @@ chrome.runtime.onMessage.addListener((message) => {
   }
 });
 
-// If the content script is injected while streaming mode is already active (e.g., page refresh)
-// we can check the background script's state and apply the border if needed.
-// This requires a message exchange, which we'll handle in background.js when injecting.
+// When the content script loads, ask the background script if streaming mode is active for this tab.
+// This makes the border appear correctly on page reloads or if the initial "apply" message was missed.
+chrome.runtime.sendMessage({ action: "queryTabStatus" }, (response) => {
+  if (chrome.runtime.lastError) {
+    // This can happen if the popup is open, which has its own message listener. We can ignore this error.
+    return;
+  }
+  if (response && response.isFocusTab) {
+    applyBorder();
+  }
+});

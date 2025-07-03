@@ -10,16 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const resumeButton = document.getElementById('resumeButton');
   const shortcutDisplay = document.getElementById('shortcutDisplay');
   const footerText = document.getElementById('footerText');
+  const showCryptoButton = document.getElementById('showCrypto');
+  const cryptoInfoDiv = document.getElementById('cryptoInfo');
+
   
-  // Set correct keyboard shortcut based on platform
-  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  if (isMac) {
-    shortcutDisplay.textContent = '⌘+Shift+L';
-    footerText.textContent = 'Press ⌘+Shift+L to toggle Streaming Mode';
-  } else {
-    shortcutDisplay.textContent = 'Ctrl+Shift+S';
-    footerText.textContent = 'Press Ctrl+Shift+S to toggle Streaming Mode';
-  }
   
   // Check current focus mode status when popup opens
   chrome.runtime.sendMessage({ action: "getStatus" }, (response) => {
@@ -40,11 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
           tabTitle: response.tabTitle,
           canResume: false
         });
-        
-        // Close the popup after a brief delay so user sees the status change
-        setTimeout(() => {
-          window.close();
-        }, 1000);
       } else {
         startButton.textContent = "Start Streaming Mode";
         startButton.disabled = false;
@@ -66,11 +55,6 @@ document.addEventListener('DOMContentLoaded', () => {
           focusMode: false,
           canResume: true
         });
-        
-        // Close the popup after a brief delay so user sees the status change
-        setTimeout(() => {
-          window.close();
-        }, 1000);
       } else {
         stopButton.textContent = "Stop Streaming Mode";
         stopButton.disabled = false;
@@ -97,6 +81,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Show/hide crypto donation info
+  if (showCryptoButton) {
+    showCryptoButton.addEventListener('click', () => {
+      cryptoInfoDiv.classList.toggle('hidden');
+    });
+  }
   
   // Update UI based on focus mode status
   function updateUI(status) {

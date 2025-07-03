@@ -160,6 +160,75 @@
       cursor: not-allowed;
     }
     
+    .support-card {
+      background-color: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 10px;
+      border-top: 1px solid #2a2a2a;
+    }
+
+    .support-buttons {
+      flex-direction: row; /* Override column direction from .action-buttons */
+    }
+
+    .support-button {
+      flex-grow: 1;
+      font-size: 12px;
+      padding: 8px;
+    }
+
+    .crypto-info {
+      background-color: #232323;
+      border-radius: 6px;
+      padding: 12px;
+      font-size: 12px;
+      color: #999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .crypto-address {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .crypto-address label {
+      font-weight: 600;
+      color: #ccc;
+      min-width: 30px;
+    }
+
+    .crypto-address input {
+      flex-grow: 1;
+      background-color: #111;
+      border: 1px solid #444;
+      color: #f1f1f1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .copy-btn {
+      background-color: var(--accent-color);
+      color: var(--bg-color);
+      border: none;
+      border-radius: 4px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
     .button.secondary:disabled {
       border-color: #333;
       background-color: transparent;
@@ -182,7 +251,7 @@
   <div class="container">
     <div class="header">
       <h1>Streaming Mode</h1>
-      <div id="shortcutDisplay" class="keyboard-shortcut">Ctrl+Shift+S</div>
+
     </div>
     
     <div class="status-card">
@@ -208,9 +277,23 @@
       </button>
     </div>
     
-    <div id="footerText" class="footer">
-      Press Ctrl+Shift+S (or ⌘+Shift+S on Mac) to toggle Streaming Mode
+    <div class="support-card">
+      <div class="status-text">Enjoying this extension? Consider a donation.</div>
+      <div class="action-buttons">
+        <button id="showCrypto" class="button secondary">💎 Donate Crypto</button>
+      </div>
+      <div id="cryptoInfo" class="crypto-info hidden">
+        <p>Send money here please.</p>
+    
+        <div class="crypto-address">
+          <label>ETH</label>
+          <input type="text" value="0x91D2EE2C6c6Dfdf6F1338b7a7e7cCA1A25eBa5D0" readonly>
+        </div>
+      </div>
     </div>
+
+    <div id="footerText" class="footer">
+
   </div>
   
   <script src="popup.js"></script>

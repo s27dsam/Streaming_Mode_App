@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Streaming Mode (Tab Lock)",
-  "version": "2.0",
-  "description": "Lock yourself to a single tab to stop having to close popup adds on streaming sites.",
+  "version": "3.0",
+  "description": "Lock yourself to a single tab to stop having to close popup adds on streaming and movie sites.",
   "permissions": [
     "tabs",
     "activeTab",
@@ -24,13 +24,13 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
+      "16": "icon2.png",
+      "48": "icon2.png",
       "128": "icon.png"
     }
   },
   "icons": {
-    "16": "icon.png",
+    "16": "icon2.png",
     "48": "icon.png",
     "128": "icon.png"
   },
